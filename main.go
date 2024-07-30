@@ -1,14 +1,22 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 	"os"
 
+	"github.com/AbtahiHasan/go-first-backend/internal/database"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
+
+type apiConfig struct {
+	DB *database.Queries
+}
+
 
 func main() {
 
@@ -20,6 +28,21 @@ func main() {
 		log.Fatal("Port not found")
 	}
 
+	dbUrl := os.Getenv("DB_URL")
+
+	if dbUrl == ""{
+		log.Fatal("DB_URL not found")
+	}
+
+	connection, err :=sql.Open("postgres", dbUrl)
+	if err != nil {
+		log.Fatal("DB connection failed")
+	}
+
+		
+	apiCfg := apiConfig{
+		DB: database.New(connection),
+	}
 
 	router := chi.NewRouter()
 
@@ -37,6 +60,7 @@ func main() {
 
 	v1Router.Get("/health", handlerReadiness)
 	v1Router.Get("/err", handlerErr)
+	v1Router.Post("/users", apiCfg.handleCreateUser)
 	router.Mount("/v1",v1Router)
 
 	server := &http.Server{
@@ -44,7 +68,7 @@ func main() {
 		Addr: ":"+port,
 	}
 	
-	err := server.ListenAndServe()
+	err = server.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
 	}
