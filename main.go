@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -37,7 +36,7 @@ func main() {
 	v1Router := chi.NewRouter()
 
 	v1Router.Get("/health", handlerReadiness)
-
+	v1Router.Get("/err", handlerErr)
 	router.Mount("/v1",v1Router)
 
 	server := &http.Server{
@@ -50,5 +49,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Server running on port", port)
+	log.Println("Server running on port", port)
 }
