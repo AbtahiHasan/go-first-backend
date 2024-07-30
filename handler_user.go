@@ -35,3 +35,6 @@ func (apiCfg *apiConfig) handleCreateUser(w http.ResponseWriter, r *http.Request
 
 	responseFormatter(w, 200, databaseUserToUser(newUser))
 }
+func (apiCfg *apiConfig) handleGetUser(w http.ResponseWriter, r *http.Request) {
+	
+}
