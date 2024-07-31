@@ -38,3 +38,14 @@ func (apiCfg *apiConfig) handleCreateFeed(w http.ResponseWriter, r *http.Request
 
 	responseFormatter(w, 201, newFeed)
 }
+
+
+func (apiCfg *apiConfig) handleGetFeeds(w http.ResponseWriter, r *http.Request) {
+	feeds, err := apiCfg.DB.GetFeeds(r.Context())
+	if err != nil {
+		errorFormatter(w, 400, fmt.Sprintf("Error getting feeds: %v", err))
+		return
+	}
+
+	responseFormatter(w, 200, feeds)
+}
