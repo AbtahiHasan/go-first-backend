@@ -2,9 +2,11 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/AbtahiHasan/go-first-backend/internal/database"
 	"github.com/go-chi/chi"
@@ -20,6 +22,11 @@ type apiConfig struct {
 
 func main() {
 
+	feed, err := urlToFeed("https://wagslane.dev/index.xml")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(feed)
 	godotenv.Load()
 
 	port := os.Getenv("PORT")
@@ -39,11 +46,11 @@ func main() {
 		log.Fatal("DB connection failed")
 	}
 
-		
+	db := database.New(connection)
 	apiCfg := apiConfig{
-		DB: database.New(connection),
+		DB: db,
 	}
-
+	go startScraping(db,10, time.Minute)
 	router := chi.NewRouter()
 
 	router.Use(cors.Handler(cors.Options{
@@ -79,5 +86,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println("Server running on port", port)
+	fmt.Println("Server running on port", port)
 }
