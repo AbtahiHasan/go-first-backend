@@ -1,4 +1,18 @@
-## Go first backend
+# Go rss first backend
+
+## project information
+
+- language uses go lang
+- database uses postgresql
+- for migrations uses goose
+- for handle row db queries uses sqlc
+
+### for api authentication header here token auto generated and it's auto saved in user table
+
+```bash
+    key authentication
+    value ApiKey 2022a6b664f81a07097d8d0a1a5ac4b85c4706de1e8405aafb96ce8f29ba2dba
+```
 
 #### how to run this project locally
 
@@ -22,3 +36,5 @@
 ```bash
     go build && ./go-first-backend
 ```
+
+#### postman documentation [postman](https://documenter.getpostman.com/view/30464992/2sA3kbhyTu)
