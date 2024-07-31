@@ -6,6 +6,8 @@
 - database uses postgresql
 - for migrations uses goose
 - for handle row db queries uses sqlc
+- for routing uses chi router
+- pq uses db query
 
 ### for api authentication header here token auto generated and it's auto saved in user table
 
