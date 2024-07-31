@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/AbtahiHasan/go-first-backend/internal/database"
+	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 )
 
@@ -51,5 +52,27 @@ func (apiCfg *apiConfig) handleGetFeedFollows(w http.ResponseWriter, r *http.Req
 	}
 
 	responseFormatter(w, 200, newFeedFollow)
+
+}
+func (apiCfg *apiConfig) handleDeleteFeedFollow(w http.ResponseWriter, r *http.Request, user database.User) {
+
+	feedFollowIdStr := chi.URLParam(r, "feedFollowId")
+	
+	feedFollowId, err := uuid.Parse(feedFollowIdStr)
+
+	if err != nil {
+		errorFormatter(w, 400, fmt.Sprintf("Error parsing follow id: %v", err))
+		return
+	}
+	err = apiCfg.DB.DeleteFeedFollow(r.Context(), database.DeleteFeedFollowParams{
+		ID:feedFollowId, 
+		UserID:user.ID,
+	})
+
+	if err != nil {
+		errorFormatter(w, 400, fmt.Sprintf("Error deleting follow: %v", err))
+		return
+	}
+	responseFormatter(w, 200, struct{}{})
 
 }
