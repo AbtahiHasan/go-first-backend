@@ -40,3 +40,16 @@ func (apiCfg *apiConfig) handleCreateFeedFollow(w http.ResponseWriter, r *http.R
 	responseFormatter(w, 201, newFeedFollow)
 
 }
+func (apiCfg *apiConfig) handleGetFeedFollows(w http.ResponseWriter, r *http.Request, user database.User) {
+
+	
+	newFeedFollow, err := apiCfg.DB.GetFeedFollows(r.Context(), user.ID)
+
+	if err != nil {
+		errorFormatter(w, 400, fmt.Sprintf("getting feed follow error: %v", err))
+		return
+	}
+
+	responseFormatter(w, 200, newFeedFollow)
+
+}
