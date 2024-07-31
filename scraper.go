@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"log"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/AbtahiHasan/go-first-backend/internal/database"
+	"github.com/google/uuid"
 )
 
 func startScraping(db *database.Queries, concurrency int, timeBetweenRequest time.Duration) {
@@ -48,7 +50,27 @@ func  scrapeFeed(db database.Queries,wg *sync.WaitGroup, feed database.Feed) {
 	}
 
 	for _, item := range rssFeed.Channel.Item {
-		log.Println("Found post", item.Title)
+		t, err := time.Parse(time.RFC1123Z, item.PubDate)
+
+		if err != nil {
+			log.Println("couldn't parse date")
+		}
+
+		_,err = db.CreatePost(context.Background(), database.CreatePostParams{
+			ID: uuid.New(),
+			Title: item.Title,
+			Description: item.Description,
+			Url: item.Link,
+			FeedID: feed.ID,
+			PublishedAt: t,
+		})
+		if err != nil {
+			if strings.Contains(err.Error(),"duplicate key") {
+				continue
+			}
+			log.Println("failed to create post:", err)
+		}
+
 	}
 	log.Printf("feed %s collected, %v post found", feed.Name, len(rssFeed.Channel.Item))
 }
